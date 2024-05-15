@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareBoost</title>
+    <style>
+        body {
+            background-image: url("https://i.imgur.com/FImuOWo.gif");
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #9400D3;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .floating-box {
+            padding: 40px;
+            background-color: #4B0082;
+            border-radius: 20px;
+            animation: floatAnimation 5s ease-in-out infinite alternate;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        @keyframes floatAnimation {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        label {
+            color: #fff;
+            text-align: center;
+        }
+        input[type="text"],
+        input[type="number"],
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #000;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        button[type="button"] {
+            cursor: pointer;
+            background-color: #9400D3;
+            color: #fff;
+            font-size: 18px;
+            padding: 20px 40px;
+            border-radius: 8px;
+        }
+        #shareCount {
+            padding: 15px;
+            background-color: #4B0082;
+            border-radius: 8px;
+            text-align: center;
+        }
+        #shareCount::before {
+            content: "Share Count: ";
+            font-weight: bold;
+        }
+        #popupMessage {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            color: #4B0082;
+            font-weight: bold;
+            text-align: center;
+            font-size: 20px;
+        }
+        footer {
+            text-align: center;
+            font-size: 14px;
+            color: #fff;
+            margin-top: 20px;
+        }
+        #errorBox {
+            display: none;
+            background-color: #FF0000;
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>FACEBOOK BOOSTING SHARE SERVICE</h1>
+    <div class="container">
+        <div class="floating-box">
+            <form id="shareForm" style="width: 100%;">
+                <label for="accessToken">ACCESS TOKEN:</label><br>
+                <input type="text" id="accessToken" name="accessToken" required><br>
+                <label for="shareUrl">POST URL (public post):</label><br>
+                <input type="text" id="shareUrl" name="shareUrl" required><br>
+                <label for="shareAmount">SHARE AMOUNT:</label><br>
+                <input type="number" id="shareAmount" name="shareAmount" required><br><br>
+                <button type="button" onclick="validateForm()">AUTO SHARE START</button>
+            </form>
+            <div id="shareCount"></div>
+        </div>
+    </div>
+    <div id="popupMessage">SHARING IS STARTED CHECK THE POST...</div>
+    <footer>
+        <p>BOOSTING SITE CREATED BY : YAKIRO WYATT</p>
+    </footer>
+    <div id="errorBox"></div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function showPopup() {
+            document.getElementById("popupMessage").style.display = "block";
+            setTimeout(function() {
+                document.getElementById("popupMessage").style.display = "none";
+            }, 2000);
+        }
+
+        function updateShareCount(count) {
+            const shareCountElement = document.getElementById("shareCount");
+            shareCountElement.innerHTML = `${count}`;
+        }
+
+        function displayError(error) {
+            const errorBox = document.getElementById("errorBox");
+            const errorMessage = document.createElement("p");
+            errorMessage.textContent = error.message;
+            errorBox.appendChild(errorMessage);
+            errorBox.style.display = "block";
+        }
+
+        function validateForm() {
+            const accessToken = document.getElementById("accessToken").value.trim();
+            const shareUrl = document.getElementById("shareUrl").value.trim();
+            const shareAmount = document.getElementById("shareAmount").value.trim();
+
+            if (accessToken === "" || shareUrl === "" || shareAmount === "") {
+                alert("PLEASE COMPLETE THE ACCESS TOKEN - POST URL - SHARE AMOUNT - TO CONTINUE .");
+                return;
+            }
+
+            axios.post('/shareboost', {
+                accessToken,
+                shareUrl,
+                shareAmount
+            })
+            .then(function(response) {
+                console.log(response.data);
+                if (response.data === 'DONE SHARING') {
+                    updateShareCount(shareAmount);
+                    showPopup();
+                }
+            })
+            .catch(function(error) {
+                console.error(error); // Log error to console
+                displayError(error);
+            });
+        }
+    </script>
+</body>
+</html>
